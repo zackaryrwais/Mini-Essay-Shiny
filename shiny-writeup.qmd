@@ -1,0 +1,58 @@
+
+```{r}
+library(tidyverse)
+library(shiny)
+df <- readr::read_csv("./Holocaust-Data.csv")
+df
+```
+
+```{r}
+
+```
+
+```{r}
+## Only run examples in interactive R sessions
+if (interactive()) {
+
+ui <- fluidPage(
+  checkboxGroupInput(inputId = "groups", label = "Choose groups:",
+    choiceNames =
+      list("Jews", "Poles"),
+    choiceValues =
+      list("Jews", "Poles")
+  ),
+  textOutput("txt"),
+  plotOutput("bar_plot"),
+  tableOutput("table")
+)
+
+server <- function(input, output, session) {
+  output$txt <- renderText({
+    paste(input$groups)
+  })
+   output$bar_plot = renderPlot({
+
+      plotting_df = df %>% filter( Nationality %in% as.vector(input$groups))
+        ggplot(data = plotting_df, aes( x=Nationality, y=`Number of victims`)) +
+        geom_bar(stat = "identity")
+      
+        })
+   output$table = renderTable({df %>% filter( Nationality %in% as.vector(input$groups))})
+}
+
+shinyApp(ui, server)
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
